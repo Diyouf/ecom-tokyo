@@ -13,7 +13,9 @@ async function initializeProducts() {
   // 1. Try to load from Vercel Blob first
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
-      const { blobs } = await list()
+      const { blobs } = await list({
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      })
       const productBlob = blobs.find((b) => b.pathname === 'products.json')
       if (productBlob) {
         const res = await fetch(productBlob.url, { cache: 'no-store' })
@@ -45,10 +47,16 @@ async function initializeProducts() {
 
 async function persistProducts() {
   // 1. Save locally for local environment persistence
+  let localSaveSuccess = false
   try {
     fs.writeFileSync(LOCAL_JSON_PATH, JSON.stringify(products, null, 2), 'utf-8')
+    localSaveSuccess = true
   } catch (error) {
     console.error('Failed to save products locally:', error)
+    // If we don't have Blob token, local save MUST succeed, otherwise we throw
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      throw new Error(`Failed to save products locally: ${error instanceof Error ? error.message : String(error)}`)
+    }
   }
 
   // 2. Upload to Vercel Blob for persistent deployment
@@ -57,9 +65,11 @@ async function persistProducts() {
       await put('products.json', JSON.stringify(products), {
         access: 'public',
         addRandomSuffix: false,
+        token: process.env.BLOB_READ_WRITE_TOKEN,
       })
     } catch (error) {
       console.error('Failed to upload products.json to Vercel Blob:', error)
+      throw new Error(`Vercel Blob Sync Failed: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 }

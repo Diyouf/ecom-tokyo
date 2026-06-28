@@ -48,7 +48,7 @@ export async function PUT(
     return NextResponse.json({ product: updated })
   } catch (error) {
     console.error('PUT /api/products/[id] error:', error)
-    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to update product' }, { status: 500 })
   }
 }
 
@@ -70,6 +70,6 @@ export async function DELETE(
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('DELETE /api/products/[id] error:', error)
-    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 })
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to delete product' }, { status: 500 })
   }
 }
