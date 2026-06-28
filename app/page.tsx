@@ -206,7 +206,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               <div className="text-5xl mb-4">💬</div>
               <h2 className="text-3xl font-bebas tracking-wide text-white mb-3">Order via WhatsApp</h2>
               <p className="text-white/60 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-                Skip the checkout. Just tap "Buy Now" on any product and chat with us directly.
+                Skip the checkout. Just tap &quot;Buy Now&quot; on any product and chat with us directly.
                 Fast, friendly, and hassle-free bundle savings.
               </p>
               <a
