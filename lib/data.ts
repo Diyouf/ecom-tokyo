@@ -72,6 +72,16 @@ async function persistProducts() {
       throw new Error(`Vercel Blob Sync Failed: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
+
+  // 3. Trigger Vercel Deploy Hook if configured
+  if (process.env.VERCEL_DEPLOY_HOOK_URL) {
+    try {
+      await fetch(process.env.VERCEL_DEPLOY_HOOK_URL, { method: 'POST' })
+      console.log('Successfully triggered Vercel Deploy Hook for static rebuild')
+    } catch (error) {
+      console.error('Failed to trigger Vercel Deploy Hook:', error)
+    }
+  }
 }
 
 export async function getProducts(): Promise<Product[]> {
