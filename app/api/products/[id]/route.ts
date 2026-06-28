@@ -3,10 +3,11 @@ import { getProductById, updateProduct, deleteProduct } from '@/lib/data'
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const product = await getProductById(params.id)
+    const { id } = await context.params
+    const product = await getProductById(id)
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
@@ -19,7 +20,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const adminToken = request.cookies.get('admin_token')?.value
@@ -27,8 +28,9 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await context.params
     const body = await request.json()
-    const updated = await updateProduct(params.id, {
+    const updated = await updateProduct(id, {
       name: body.name,
       description: body.description,
       price: body.price !== undefined ? Number(body.price) : undefined,
@@ -52,7 +54,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const adminToken = request.cookies.get('admin_token')?.value
@@ -60,7 +62,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const deleted = await deleteProduct(params.id)
+    const { id } = await context.params
+    const deleted = await deleteProduct(id)
     if (!deleted) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }

@@ -10,11 +10,12 @@ import { ProductDetailsClient } from '@/components/ProductDetailsClient'
 import { ArrowLeft, Package } from 'lucide-react'
 
 interface ProductPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const product = await getProductById(params.id)
+  const resolvedParams = await params
+  const product = await getProductById(resolvedParams.id)
   if (!product) return { title: 'Product Not Found' }
 
   return {
@@ -29,7 +30,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await getProductById(params.id)
+  const resolvedParams = await params
+  const product = await getProductById(resolvedParams.id)
   if (!product) notFound()
 
   const discount = getDiscountPercent(product.price, product.originalPrice)

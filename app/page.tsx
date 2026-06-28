@@ -7,7 +7,7 @@ import { Sparkles, Grid3x3 } from 'lucide-react'
 import clsx from 'clsx'
 
 interface HomePageProps {
-  searchParams: { category?: string }
+  searchParams: Promise<{ category?: string }>
 }
 
 function Ticker() {
@@ -120,7 +120,8 @@ function RivalPromise() {
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
-  const selectedCategory = searchParams.category ?? 'all'
+  const resolvedSearchParams = await searchParams
+  const selectedCategory = resolvedSearchParams.category ?? 'all'
 
   const [featured, categoryProducts] = await Promise.all([
     getFeaturedProducts(),

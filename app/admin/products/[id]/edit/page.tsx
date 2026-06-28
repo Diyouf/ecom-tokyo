@@ -3,16 +3,18 @@ import { getProductById } from '@/lib/data'
 import { ProductForm } from '@/components/admin/ProductForm'
 
 interface EditProductPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function generateMetadata({ params }: EditProductPageProps) {
-  const product = await getProductById(params.id)
+  const resolvedParams = await params
+  const product = await getProductById(resolvedParams.id)
   return { title: product ? `Edit: ${product.name}` : 'Product Not Found' }
 }
 
 export default async function EditProductPage({ params }: EditProductPageProps) {
-  const product = await getProductById(params.id)
+  const resolvedParams = await params
+  const product = await getProductById(resolvedParams.id)
   if (!product) notFound()
 
   return (
